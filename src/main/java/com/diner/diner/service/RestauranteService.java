@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -28,7 +29,7 @@ public class RestauranteService implements RestauranteServiceImp {
         }
 
     @Override
-    @Transactional(readOnly = true)
+   /*  @Transactional(readOnly = true)
     public Page<RestauranteDTO> obtenerRestaurantes(String search, Pageable pageable) {
         Page<Restaurante> restaurantes;
 
@@ -40,7 +41,53 @@ public class RestauranteService implements RestauranteServiceImp {
         }
 
         return restaurantes.map(mapper::toDTO);
+    }*/
+
+        @Transactional(readOnly = true)
+public Page<RestauranteDTO> obtenerRestaurantes(
+    String search,
+    String nombre,
+    String correo,
+    String telefono,
+    Pageable pageable
+) {
+
+    Specification<Restaurante> spec = Specification.where(null);
+
+    //  BÚSQUEDA GLOBAL
+    if (StringUtils.hasText(search)) {
+        spec = spec.and((root, query, cb) ->
+            cb.or(
+                cb.like(cb.lower(root.get("nombre")), "%" + search.toLowerCase() + "%"),
+                cb.like(cb.lower(root.get("correo")), "%" + search.toLowerCase() + "%"),
+                cb.like(root.get("telefono").as(String.class), "%" + search + "%")
+            )
+        );
     }
+
+    //  FILTROS POR COLUMNA
+    if (StringUtils.hasText(nombre)) {
+        spec = spec.and((root, query, cb) ->
+            cb.like(cb.lower(root.get("nombre")), "%" + nombre.toLowerCase() + "%")
+        );
+    }
+
+    if (StringUtils.hasText(correo)) {
+        spec = spec.and((root, query, cb) ->
+            cb.like(cb.lower(root.get("correo")), "%" + correo.toLowerCase() + "%")
+        );
+    }
+
+    if (StringUtils.hasText(telefono)) {
+        spec = spec.and((root, query, cb) ->
+            cb.like(root.get("telefono").as(String.class), "%" + telefono + "%")
+        );
+    }
+
+    Page<Restaurante> restaurantes = repository.findAll(spec, pageable);
+
+    return restaurantes.map(mapper::toDTO);
+}
 
 
     @Override

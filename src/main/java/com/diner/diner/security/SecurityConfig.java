@@ -99,6 +99,7 @@ public class SecurityConfig {
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/productos/**").hasAnyRole("ADMIN","USER")
                 .requestMatchers("/api/restaurantes/**").hasAnyRole("ADMIN","USER")
+                .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

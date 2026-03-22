@@ -4,11 +4,12 @@ import com.diner.diner.entities.Restaurante;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RestauranteRepository  extends JpaRepository<Restaurante, Long> {
+public interface RestauranteRepository  extends JpaRepository<Restaurante, Long>, JpaSpecificationExecutor<Restaurante> {
     
  @Query("SELECT r FROM Restaurante r WHERE " +
        "LOWER(r.nombre) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
