@@ -5,62 +5,80 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.diner.diner.controllers.dto.ProductoDTO;
-import com.diner.diner.entities.Productos;
+import com.diner.diner.entities.Producto;
+import com.diner.diner.mappers.ProductoMapper;
+import com.diner.diner.producers.ProductoProducer;
 import com.diner.diner.repositories.ProductoRepository;
 import com.diner.diner.service.Implements.ProductoServiceImp;
 
 @Service
-public class ProductoService implements ProductoServiceImp{
+public class ProductoService implements ProductoServiceImp {
 
-    private ProductoRepository repository;
+    private final ProductoRepository repository;
 
-    public ProductoService(ProductoRepository repository){
-        this.repository= repository;
+    private final ProductoMapper mapper;
+
+    private final ProductoProducer producer;
+
+    public ProductoService(
+        ProductoRepository repository,
+        ProductoMapper mapper,
+        ProductoProducer producer
+    ){
+        this.mapper = mapper;
+        this.repository = repository;
+        this.producer = producer;
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<ProductoDTO> mostrarProductos(Pageable pageable) {
+        return repository.findAll(pageable).map(mapper::toDTO);
+    }
+
+    @Override
+    @Transactional
     public ProductoDTO crearProducto(ProductoDTO productoDTO) {
-       Productos producto = repository.save(new Productos(productoDTO));
-       return new ProductoDTO(producto);
+      Producto producto = mapper.toEntity(productoDTO);
+
+      //producer.enviarProducto(productoDTO);
+      Producto nuevoProducto = repository.save(producto);
+      return mapper.toDTO(nuevoProducto);
     }
 
     @Override
+    @Transactional
     public void eliminarProducto(Long id) {
-       repository.deleteById(id);
+        repository.deleteById(id);
     }
 
     @Override
-    public Page<ProductoDTO> mostrarProductos(Pageable page) {
-     
-        Page<ProductoDTO> productos= repository.findAll(page)
-        .map(producto-> new ProductoDTO(producto));
-
-        return productos;
-
+    @Transactional(readOnly = true)
+    public Optional<ProductoDTO> buscarProductoPorID(Long id) {
+        return repository.findById(id).map(mapper::toDTO);
     }
 
     @Override
-    public Optional<ProductoDTO> buscarCategoriaPorId(Long id) {
-        return repository.findById(id).map(producto->new ProductoDTO(producto));
-    }
-
-    @Override
+    @Transactional
     public ProductoDTO actualizarProducto(ProductoDTO productoDTO, Long id) {
-        Productos productoBuscado= repository.findById(id)
-        .orElseThrow(()-> new RuntimeException("No fue encontrado el producto con el id : "+id));
+        Producto productoExistente = repository.findById(id)
+        .orElseThrow(()->new RuntimeException("No se encontro el producto con el id: "+id));
 
-        productoBuscado.setNombre(productoDTO.nombre());
-        productoBuscado.setDescripcion(productoDTO.descripcion());
-        productoBuscado.setPrecio(productoDTO.precio());
-        productoBuscado.setEstado(productoDTO.estado());
+        mapper.updateEntityFromDTO(productoDTO, productoExistente);
 
-        Productos producto = repository.save(productoBuscado);
+        Producto nuevoProducto = repository.save(productoExistente);
 
-        return new ProductoDTO(producto);
+        return mapper.toDTO(nuevoProducto);
+    }
 
-   }
+    public String obtenerNombreProducto(Long id) {
+        return repository.obtenerNombre(id);
+    }
+
+
+
     
-
 }

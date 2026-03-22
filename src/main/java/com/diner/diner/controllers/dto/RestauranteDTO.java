@@ -1,15 +1,12 @@
 package com.diner.diner.controllers.dto;
 
-import java.util.List;
 
-import com.diner.diner.entities.Restaurante;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record RestauranteDTO(
@@ -32,24 +29,10 @@ public record RestauranteDTO(
 
     @JsonProperty("direccion")
     @Valid
-    DireccionDTO direccion,
+    DireccionDTO direccion
 
-    @JsonProperty("menus")
-    @Valid
-    List<MenuDTO> menus
+
 ) {
-    public RestauranteDTO(Restaurante restaurante) {
-        this(
-            restaurante.getId(),
-            restaurante.getNombre(),
-            restaurante.getTelefono(),
-            restaurante.getCorreo(),
-            restaurante.getDireccion() != null ? new DireccionDTO(restaurante.getDireccion()) : null,
-            restaurante.getMenus() != null ? 
-                restaurante.getMenus().stream()
-                    .map(menu -> new MenuDTO(menu))
-                    .toList() : null
-        );
-    }
+    
     
 }

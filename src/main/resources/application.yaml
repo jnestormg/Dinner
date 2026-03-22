@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: service-productos
+
+  datasource:
+    url: jdbc:oracle:thin:@//localhost:1521/FREEPDB1
+    username: system
+    password: abraxas
+    driver-class-name: oracle.jdbc.OracleDriver
+
+  jpa:
+    database-platform: org.hibernate.dialect.OracleDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  kafka:
+    admin:
+      auto-create: false
+    bootstrap-servers: localhost:9092
+
+server:
+  port: 8082
+
+jwt:
+  secret: VGhpcy1pcy1hLXZlcnktc2VjdXJlLWtleS1mb3ItSldULWhzMjU2LTIwMjYtY2lwaGVyLWFuZC1zaWduLWFuZC12ZXJpZnktaXQtZm9yLXNlcnZpY2Vz

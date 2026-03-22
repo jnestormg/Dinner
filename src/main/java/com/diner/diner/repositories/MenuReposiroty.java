@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.diner.diner.entities.Menu;
 
 @Repository
-public interface MenuRepository extends JpaRepository<Menu, Long> {
+public interface MenuReposiroty extends JpaRepository<Menu, Long> {
     
 }

@@ -5,54 +5,69 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.diner.diner.controllers.dto.CategoriaDTO;
-import com.diner.diner.entities.Categorias;
+import com.diner.diner.entities.Categoria;
+import com.diner.diner.mappers.CategoriaMapper;
 import com.diner.diner.repositories.CategoriaRepository;
 import com.diner.diner.service.Implements.CategoriaServiceImp;
 
 @Service
 public class CategoriaService implements CategoriaServiceImp {
 
-    private CategoriaRepository repository;
+    private final CategoriaRepository repository;
 
-    public CategoriaService(CategoriaRepository repository){
-        this.repository = repository;
+    private final CategoriaMapper mapper;
+
+    public CategoriaService(
+        CategoriaRepository repository,
+        CategoriaMapper mapper
+    ){
+        this.repository= repository;
+        this.mapper = mapper;
     }
 
     @Override
-    public Page<CategoriaDTO> mostrarCategorias(Pageable page) {
-       Page<CategoriaDTO> categorias = repository.findAll(page)
-       .map(categoria->new CategoriaDTO(categoria));
-       return categorias;
+    @Transactional(readOnly = true)
+    public Page<CategoriaDTO> mostrarCategorias(Pageable pageable) {
+       return repository.findAll(pageable)
+        .map(mapper::tDto);
     }
 
     @Override
-    public CategoriaDTO crearCategoria(CategoriaDTO categoriadto) {
-       Categorias categoria = repository.save(new Categorias(categoriadto));
-       return new CategoriaDTO(categoria);
+    @Transactional
+    public CategoriaDTO crearCategoria(CategoriaDTO categoriaDTO) {
+        Categoria categoria= mapper.toEntity(categoriaDTO);
+        Categoria nuevCategoria = repository.save(categoria);
+        return mapper.tDto(nuevCategoria);
     }
 
     @Override
+    @Transactional
     public void eliminarCategoria(Long id) {
-       repository.deleteById(id);
+        repository.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<CategoriaDTO> buscarCategoriaPorId(Long id) {
-        return repository.findById(id).map(categoria-> new CategoriaDTO(categoria));
+        return repository.findById(id)
+        .map(mapper::tDto);
     }
 
     @Override
-    public CategoriaDTO actualizarCategoria(CategoriaDTO categoria, Long id) {
-       Categorias categoriaBuscada = repository.findById(id)
-       .orElseThrow(()->new RuntimeException("No se encontró la categoria con el id : "+id));
+    @Transactional
+    public CategoriaDTO actualizarCategoria(Long id, CategoriaDTO categoriaDTO) {
+  
+        Categoria  categoriaExistente = repository.findById(id)
+        .orElseThrow(()-> new RuntimeException("No se encontro la categoria con el id: "+id));
 
-       categoriaBuscada.setNombre(categoria.nombre());
-       categoriaBuscada.setDescripcion(categoria.descripcion());
+        mapper.UpdateEntityToDTO(categoriaDTO, categoriaExistente);
 
-       Categorias nuevaCategoria = repository.save(categoriaBuscada);
-       return new CategoriaDTO(nuevaCategoria);
+        Categoria categoriaNueva = repository.save(categoriaExistente);
+
+        return mapper.tDto(categoriaNueva);
     }
     
 }

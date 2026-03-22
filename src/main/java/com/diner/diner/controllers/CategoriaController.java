@@ -22,62 +22,60 @@ import org.springframework.web.bind.annotation.RestController;
 import com.diner.diner.controllers.dto.CategoriaDTO;
 import com.diner.diner.service.CategoriaService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/categorias")
 public class CategoriaController {
 
     @Autowired
     private CategoriaService service;
-
+    
     @GetMapping
     public ResponseEntity<?> mostrarCategorias(){
-        Pageable page = PageRequest.of(0, 10, 
-            Sort.by("nombre").ascending());
+        Pageable categorias =PageRequest.of(0, 10, 
+            Sort.by("nombre").ascending()
+        );
+        Page<CategoriaDTO> categoriaDTO = service.mostrarCategorias(categorias);
 
-        Page<CategoriaDTO> categorias = service.mostrarCategorias(page);
-
-        return ResponseEntity.ok(categorias);
+        return ResponseEntity.ok(categoriaDTO);
 
     }
 
-
     @PostMapping
-    public ResponseEntity<?> crearCategoria(
-        @RequestBody CategoriaDTO categoriaDTO
-    ){
-        CategoriaDTO nuevaCategoria= service.crearCategoria(categoriaDTO);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaCategoria);
+    public ResponseEntity<?> crearCategoria(@Valid @RequestBody CategoriaDTO categoriaDTO){
+        CategoriaDTO categoria= service.crearCategoria(categoriaDTO);
+        return ResponseEntity.status(HttpStatus.CREATED)
+        .body(categoria);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarCategoria(@PathVariable Long id){
-        Optional<CategoriaDTO> categoriaBuscada= service.buscarCategoriaPorId(id);
+        Optional<CategoriaDTO> categoriaExistente = service.buscarCategoriaPorId(id);
 
-        if (categoriaBuscada.isEmpty()) {
+        if (categoriaExistente.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(Map.of("error: ","La categoria con el id:"+id+" no fue encontrada"));
+            .body(Map.of("error:", "No se encontro la categoria con el id: "+id));
         }
 
         service.eliminarCategoria(id);
-        return ResponseEntity.ok(Map.of("mensaje: ","Se eliminó correctamente"));
+        return ResponseEntity.ok(Map.of("mensaje:", "Se eliminó correctamente"));
     }
-    
 
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarCategoria(
+        @Valid
         @RequestBody CategoriaDTO categoriaDTO,
         @PathVariable Long id
     ){
-        Optional<CategoriaDTO> categoriaBuscada= service.buscarCategoriaPorId(id);
+        Optional<CategoriaDTO> categoriaExistente = service.buscarCategoriaPorId(id);
 
-        if (categoriaBuscada.isEmpty()) {
+        if (categoriaExistente.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(Map.of("error:", "Categoria con id: "+id+" no encontrada"));
+            .body(Map.of("error:", "Categoria con id"+id+" no encontrada"));
         }
 
-        CategoriaDTO categoriaActualizada = service.actualizarCategoria(categoriaDTO, id);
-
-        return ResponseEntity.ok(categoriaActualizada);
+        CategoriaDTO categoriaNueva = service.actualizarCategoria(id, categoriaDTO);
+        return ResponseEntity.ok(categoriaNueva);
     }
 }

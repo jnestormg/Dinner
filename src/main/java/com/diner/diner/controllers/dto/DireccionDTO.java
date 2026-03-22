@@ -1,6 +1,5 @@
 package com.diner.diner.controllers.dto;
 
-import com.diner.diner.entities.Direccion;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.Size;
@@ -11,7 +10,7 @@ public record DireccionDTO(
     String calle,
 
     @JsonProperty("numero")
-    String numero,
+    Integer numero,
 
     @JsonProperty("colonia")
     @Size(min=1, max=50, message="La colonia debe tener entre 1 y 50 caracteres")
@@ -26,18 +25,9 @@ public record DireccionDTO(
     String estado,
 
     @JsonProperty("codigo_postal")
-    String codigoPostal
+    Integer codigoPostal
 ) {
 
-    public DireccionDTO(Direccion direccion) {
-        this(
-            direccion.getCalle(),
-            direccion.getNumero() != null ? direccion.getNumero().toString() : null,
-            direccion.getColonia(),
-            direccion.getCiudad(),
-            direccion.getEstado(),
-            direccion.getCodigoPostal() != null ? direccion.getCodigoPostal().toString() : null
-        );
-    }   
+     
     
 }

@@ -1,6 +1,5 @@
 package com.diner.diner.controllers.dto;
 
-import com.diner.diner.entities.Categorias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotNull;
@@ -9,25 +8,22 @@ import jakarta.validation.constraints.Size;
 
 public record CategoriaDTO(
 
-    @JsonProperty("id")
-    @Null(message="El id debe ir vacio")
+    @JsonProperty(value = "id", required = false)
+    @Null(message = "El id debe ir vacio")
     Long id,
 
-    @JsonProperty(value="nombre", required=true)
-    @NotNull(message="El nombre es requerido")
-    @Size(min=3, max=100, message="El nombre debe tener entre 3 y 100 caracteres")
+    @NotNull(message = "El nombre   no    puede ir vacio")
+    @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres")
     String nombre,
 
-    @JsonProperty("descripcion")
-    String descripcion
+    String descripcion,
 
+    @NotNull(message = "El estado no debe ir vacio")
+    Boolean estado,
+
+    @JsonProperty("menu_id")
+    @NotNull(message = "El menu_id no debe ir vacio")
+    Long menuId
 ) {
-
-    public CategoriaDTO(Categorias categorias){
-        this(categorias.getId(),
-         categorias.getNombre(),
-          categorias.getDescripcion()
-        );
-    }
     
 }

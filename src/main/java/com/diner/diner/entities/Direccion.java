@@ -1,6 +1,5 @@
 package com.diner.diner.entities;
 
-import com.diner.diner.controllers.dto.DireccionDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -32,12 +31,5 @@ public class Direccion {
     @Column(length=10)
     private Integer codigoPostal;
 
-    public Direccion(DireccionDTO direccionDTO) {
-        this.calle = direccionDTO.calle();
-        this.numero = direccionDTO.numero() != null ? Integer.parseInt(direccionDTO.numero()) : null;
-        this.colonia = direccionDTO.colonia();
-        this.ciudad = direccionDTO.ciudad();
-        this.estado = direccionDTO.estado();
-        this.codigoPostal = direccionDTO.codigoPostal() != null ? Integer.parseInt(direccionDTO.codigoPostal()) : null;
-    }
+    
 }

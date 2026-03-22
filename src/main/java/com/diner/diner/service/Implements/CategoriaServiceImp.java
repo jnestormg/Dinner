@@ -9,13 +9,13 @@ import com.diner.diner.controllers.dto.CategoriaDTO;
 
 public interface CategoriaServiceImp {
     
-    Page<CategoriaDTO> mostrarCategorias(Pageable page);
+    Page<CategoriaDTO> mostrarCategorias(Pageable pageable);
 
-    CategoriaDTO crearCategoria(CategoriaDTO categoria);
+    CategoriaDTO crearCategoria(CategoriaDTO categoriaDTO);
 
     void eliminarCategoria(Long id);
 
     Optional<CategoriaDTO> buscarCategoriaPorId(Long id);
 
-    CategoriaDTO actualizarCategoria(CategoriaDTO categoria, Long id);
+    CategoriaDTO actualizarCategoria(Long id, CategoriaDTO categoriaDTO);
 }

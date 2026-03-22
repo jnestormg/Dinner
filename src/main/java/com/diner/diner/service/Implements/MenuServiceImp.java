@@ -1,21 +1,25 @@
 package com.diner.diner.service.Implements;
 
+
 import java.util.Optional;
 
-import com.diner.diner.controllers.dto.MenuDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface MenuServiceImp {
+import com.diner.diner.controllers.dto.MenuDTO;
 
-    MenuDTO crearMenu(MenuDTO menu);
+public interface MenuServiceImp {
+    
+
+    MenuDTO createMenu(MenuDTO menuDTO);
+
+    Optional<MenuDTO> buscarMenuPorId(Long id); 
 
     void eliminarMenu(Long id);
 
-    Optional<MenuDTO> buscarPorId(Long id);
+    MenuDTO actualizarMenu(Long id, MenuDTO menuDTO);
 
-    MenuDTO actualizarMenu(MenuDTO menu, Long id);
+    Page<MenuDTO> obtenerMenus(Pageable pageable);
 
-    Page<MenuDTO> mostrarMenus(Pageable page);
-    
+
 }

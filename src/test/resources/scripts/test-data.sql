@@ -135,3 +135,32 @@ INSERT INTO menus (
     'Pizza grande + refresco 2L',
     (SELECT id FROM restaurantes WHERE nombre = 'Pizza Italiana')
 );
+
+-- categorías y productos para las pruebas de productos
+INSERT INTO categorias (nombre, descripcion, menu_id) VALUES (
+    'Bebidas',
+    'Refrescos y jugos',
+    (SELECT id FROM menus WHERE nombre = 'Menu Ejecutivo')
+);
+
+INSERT INTO categorias (nombre, descripcion, menu_id) VALUES (
+    'Postres',
+    'Dulces y helados',
+    (SELECT id FROM menus WHERE nombre = 'Menu Pizza Familiar')
+);
+
+INSERT INTO productos (nombre, descripcion, precio, estado, categoria_id) VALUES (
+    'Coca-Cola',
+    'Refresco de cola',
+    20.0,
+    1,
+    (SELECT id FROM categorias WHERE nombre = 'Bebidas')
+);
+
+INSERT INTO productos (nombre, descripcion, precio, estado, categoria_id) VALUES (
+    'Helado de vainilla',
+    'Porción de helado',
+    30.0,
+    1,
+    (SELECT id FROM categorias WHERE nombre = 'Postres')
+);

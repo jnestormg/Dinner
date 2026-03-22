@@ -6,11 +6,10 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.diner.diner.controllers.dto.CategoriaDTO;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,45 +24,40 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name="categorias")
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@Table(name="categorias")
-public class Categorias {
-    
+public class Categoria {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="menu_id")
-    private Menu menu;
-
-    @OneToMany(mappedBy="categoria", cascade=CascadeType.ALL)
-    private List<Productos> productos;
-
-    @Column(name="nombre", nullable=false, length=100)
+    @Column(nullable = false,columnDefinition = "VARCHAR2(50) DEFAULT 'Sin nombre'")
     private String nombre;
 
-    @Column( name = "descripcion",
-        columnDefinition = "CLOB"
-    )
+    @Column(columnDefinition = "CLOB")
     private String descripcion;
 
+    @Column(nullable = false, columnDefinition = "NUMBER(1) DEFAULT 1")
+    private Boolean estado;
 
     @CreationTimestamp
-    @Column(nullable=false, updatable=false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime fechaCreacion;
 
     @UpdateTimestamp
-    @Column(nullable=false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime fechaActualizacion;
 
-    public Categorias(CategoriaDTO categoriaDTO){
-        this.nombre = categoriaDTO.nombre();
-        this.descripcion = categoriaDTO.descripcion();
-    }
+    @ManyToOne
+    @JoinColumn(name = "menu_id")
+    private Menu menu;
+
+    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Producto> productos;
+ 
 }

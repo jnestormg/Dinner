@@ -5,17 +5,17 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.diner.diner.controllers.dto.SubproductoDTO;
+import com.diner.diner.controllers.dto.SubProductoDTO;
 
 public interface SubProductoServiceImp {
     
-    SubproductoDTO crearSubProducto(SubproductoDTO subproducto);
+    Page<SubProductoDTO> mostrarSubProductos(Pageable pageable);
+
+    SubProductoDTO crearSubProducto(SubProductoDTO subProductoDTO);
 
     void eliminarSubProducto(Long id);
 
-    Optional<SubproductoDTO> buscarSubProductoPorId(Long id);
+    SubProductoDTO actualizarSubProducto(SubProductoDTO subProductoDTO, Long id);
 
-    Page<SubproductoDTO> mostrarSubProductos(Pageable page);
-
-    SubproductoDTO actualizarSubProductos(SubproductoDTO subproducto, Long id);
+    Optional<SubProductoDTO> buscarSubProductoPorId(Long id);
 }

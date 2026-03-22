@@ -8,7 +8,7 @@ import com.diner.diner.controllers.dto.RestauranteDTO;
 
 public interface RestauranteServiceImp {
     
-    Page<RestauranteDTO> obtenerRestaurantes(Pageable pageable);
+    Page<RestauranteDTO> obtenerRestaurantes(String search, Pageable pageable);
 
     RestauranteDTO crearRestaurante(RestauranteDTO restauranteDTO);
 

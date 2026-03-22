@@ -1,9 +1,11 @@
 package com.diner.diner.repositories;
-import com.diner.diner.entities.Subproductos;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.diner.diner.entities.SubProducto;
+
 @Repository
-public interface SubproductoRepository  extends JpaRepository<Subproductos, Long> {
+public interface SubProductoRepository extends JpaRepository<SubProducto, Long> {
     
 }

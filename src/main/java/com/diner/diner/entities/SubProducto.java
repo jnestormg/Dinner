@@ -1,14 +1,12 @@
 package com.diner.diner.entities;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.diner.diner.controllers.dto.ProductoDTO;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +14,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,29 +24,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="productos")
+@Table(name="subproductos")
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class Productos {
+public class SubProducto {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy="productos", cascade=CascadeType.ALL)
-    private List<Subproductos> subproductos;
-
-    @OneToMany(mappedBy="productos", cascade=CascadeType.ALL)
-    private List<Ingredientes> ingredientes;
-
-    @ManyToOne
-    @JoinColumn(name="categoria_id")
-    private Categorias categoria;
-
-    @Column(nullable=false, length=100)
+    @Column(length=50, nullable=false)
     private String nombre;
 
     @Column(columnDefinition="CLOB")
@@ -56,21 +45,28 @@ public class Productos {
     @Column(columnDefinition="NUMBER(10,2) DEFAULT 0.0")
     private Float precio;
 
-    @Column(columnDefinition="NUMBER(1) DEFAULT 1")
-    private Boolean estado;    
-
     @CreationTimestamp
-    @Column(nullable=false, updatable=false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP ")
+    @Column(nullable=false, updatable=false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime fechaCreacion;
 
     @UpdateTimestamp
     @Column(nullable=false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime fechaActualizacion;
+    
+    @ManyToOne
+    @JoinColumn(name="producto_id", nullable=false)
+    @JsonIdentityReference(alwaysAsId=true)
+    private Producto producto;
 
-    public Productos(ProductoDTO productoDTO){
-        this.nombre = productoDTO.nombre();
-        this.descripcion = productoDTO.descripcion();
-        this.precio =  productoDTO.precio();
-        this.estado = productoDTO.estado();
+    @PrePersist
+    @PreUpdate //Si precio == null, se copia el precio del producto. Cuando se actualiza el subproducto
+    public void setPrecioDefault(){
+        if(precio == null && producto != null){
+            precio = producto.getPrecio();
+        }
+        else if(precio == null){
+            precio = 0.0f;
+        }
     }
+    
 }
